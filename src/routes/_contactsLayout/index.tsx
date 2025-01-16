@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_contactsLayout/')({
 
 function RouteComponent() {
   const { contacts, isPending, hasRemoteData } = useContext(ContactsContext);
-  console.log('contacts length', contacts.length)
+
   return (
     <>
       {isPending || hasRemoteData && !contacts.length ? (
