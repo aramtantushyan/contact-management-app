@@ -31,10 +31,10 @@ export interface Contact {
   address: {
     street: string,
     city: string,
-    zipcode: string,
+    zipcode?: string,
   },
   company: {
-    name: string,
+    name?: string,
   },
   image_url: string
 }

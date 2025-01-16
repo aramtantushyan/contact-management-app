@@ -1,39 +1,64 @@
-import { useForm } from "@tanstack/react-form";
-import { z } from 'zod';
-import { Contact } from "../../utils/types/contacts";
-import { UserCircleIcon } from "@heroicons/react/24/solid";
-import useMutateContact, { HttpMethod } from "../../hooks/useMutateContact";
 import { useContext } from "react";
+import { useForm } from "@tanstack/react-form";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "@tanstack/react-router";
+
+import { Contact } from "../../utils/types/contacts";
+import useMutateContact, { HttpMethod } from "../../hooks/useMutateContact";
 import { ContactsContext } from "../../contexts/contacts/ContactsContext";
+import { contactSchema } from "../../utils/validation/validation-schemas";
 
 interface ContactDetailsFormProps {
   contact?: Contact;
 }
 
 const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
-  const { contacts } = useContext(ContactsContext);
+  const { contacts, setContacts } = useContext(ContactsContext);
+  const  mutation = useMutateContact(onFormSubmissionSuccess);
+  const navigate = useNavigate();
 
-  // const onFormSubmissionSuccess = () => {
-  //   if (contact)
-  // }
-  const  mutation = useMutateContact();
+  function onFormSubmissionSuccess(contactData: Contact) {
+    let newContacts;
 
-  const addressSchema = z.object({
-    street: z.string().min(1, "Street is required"),
-    city: z.string().min(1, "City is required"),
-    zipcode: z.string()
-  });
-  const companySchema = z.object({
-    name: z.string()
-  })
-  const userSchema = z.object({
-    name: z.string(),
-    username: z.string(),
-    email: z.string(),
-    address: addressSchema,
-    company: companySchema,
-    image_url: z.string(),
-  })
+    if (contact) {
+      newContacts = contacts.map(c => {
+        if (c.id === contact.id) {
+          return contactData;
+        } else {
+          return c;
+        }
+      });
+    } else {
+      newContacts = [
+        ...contacts,
+        {
+          ...contactData,
+          image_url: `https://placehold.co/600x400/blue/white?text=User${contactData.id}, ${contactData.name}`
+        }
+      ];
+    }
+    setContacts(newContacts);
+    navigate({
+      to: '/contacts/$contactId',
+      params: {
+        contactId: `${contact?.id || contactData.id}`
+      }
+    })
+  }
+
+  const cancelHandler = () => {
+    if (contact) {
+      navigate({
+        to: '/contacts/$contactId',
+        params: {
+          contactId: `${contact.id}`
+        }
+      })
+    } else {
+      navigate({ to: '/' });
+    }
+  }
+
   const form = useForm({
     defaultValues: {
       name:  contact?.name || '',
@@ -50,18 +75,16 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
       image_url: contact?.image_url || '',
     },
     validators: {
-      onBlur: userSchema
+      onBlur: contactSchema
     },
     onSubmit: async ({ value }) => {
-      // Do something with form data
       mutation.mutate({ 
         method: contact ? HttpMethod.PUT : HttpMethod.POST,
         contactData: {
           ...value,
           ...(contact ? { id: contact.id } : {})
         }
-      })
-      console.log(value)
+      });
     },
   })
 
@@ -92,6 +115,9 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                         Change
                       </button>
                     </div>
+                    {field.state.meta.errors ? (
+                      <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                    ) : null}
                   </div>
                 )}
               />
@@ -103,7 +129,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                   children={(field) => (
                     <div className="sm:col-span-3">
                       <label htmlFor="fullname" className="block text-sm/6 font-medium text-gray-900">
-                        Full name
+                        Full name <span style={{ color: 'red' }}>*</span>
                       </label>
                       <div className="mt-2">
                         <input
@@ -116,6 +142,9 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                       </div>
+                      {field.state.meta.errors ? (
+                        <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                      ) : null}
                     </div>
                   )}
                 />
@@ -126,7 +155,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                   children={(field) => (
                     <div className="sm:col-span-4">
                       <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
-                        Username
+                        Username <span style={{ color: 'red' }}>*</span>
                       </label>
                       <div className="mt-2">
                         <div className="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
@@ -139,6 +168,9 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                             value={field.state.value}
                             onChange={(e) => field.handleChange(e.target.value)}
                           />
+                          {field.state.meta.errors ? (
+                            <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -151,7 +183,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                   children={(field) => (
                     <div className="sm:col-span-3">
                       <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
-                        Email
+                        Email <span style={{ color: 'red' }}>*</span>
                       </label>
                       <div className="mt-2">
                         <input
@@ -163,6 +195,9 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
+                        {field.state.meta.errors ? (
+                          <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                        ) : null}
                       </div>
                     </div>
                   )}
@@ -174,7 +209,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                 children={(field) => (
                   <div className="sm:col-span-3">
                     <label htmlFor="address-street" className="block text-sm/6 font-medium text-gray-900">
-                      Street
+                      Street <span style={{ color: 'red' }}>*</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -186,6 +221,9 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
+                      {field.state.meta.errors ? (
+                        <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                      ) : null}
                     </div>
                   </div>
                 )}
@@ -197,7 +235,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                 children={(field) => (
                   <div className="sm:col-span-3">
                     <label htmlFor="address-city" className="block text-sm/6 font-medium text-gray-900">
-                      City
+                      City <span style={{ color: 'red' }}>*</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -209,6 +247,9 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
+                      {field.state.meta.errors ? (
+                        <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                      ) : null}
                     </div>
                   </div>
                 )}
@@ -232,6 +273,9 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
+                      {field.state.meta.errors ? (
+                        <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                      ) : null}
                     </div>
                   </div>
                 )}
@@ -255,6 +299,9 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
+                        {field.state.meta.errors ? (
+                          <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                        ) : null}
                       </div>
                     </div>
                   )}
@@ -263,7 +310,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
             </div>
           </div>
           <div className="mt-6 flex items-center justify-end gap-x-6">
-            <button type="button" className="text-sm/6 font-semibold text-gray-900">
+            <button type="button" className="text-sm/6 font-semibold text-gray-900" onClick={cancelHandler}>
               Cancel
             </button>
             <form.Subscribe

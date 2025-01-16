@@ -1,6 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import ContactDetailsForm from '../../components/contact-details/ContactDetailsForm'
 import { useContext, useEffect, useState } from "react";
+import { createFileRoute } from '@tanstack/react-router';
+
+import ContactDetailsForm from '../../components/contact-details/ContactDetailsForm';
 import { ContactsContext } from "../../contexts/contacts/ContactsContext";
 import { Contact } from "../../utils/types/contacts";
 

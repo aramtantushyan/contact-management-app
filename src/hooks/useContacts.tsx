@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { contactsApi } from "../utils/api";
 import { RemoteContact } from "../utils/types/contacts";
 

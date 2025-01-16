@@ -1,5 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { useContext, useEffect, useState } from "react";
+import { createFileRoute } from '@tanstack/react-router';
+
 import { ContactsContext } from "../../contexts/contacts/ContactsContext";
 import { Contact } from "../../utils/types/contacts";
 import ContactDetails from "../../components/contact-details/ContactDetails";
@@ -10,7 +11,7 @@ export const Route = createFileRoute('/_contactsLayout/contacts/$contactId')({
 
 function RouteComponent() {
   const { contactId } = Route.useParams();
-  const { contacts } = useContext(ContactsContext);
+  const { contacts, isPending } = useContext(ContactsContext);
   const [currentContact, setCurrentContact] = useState<Contact>();
 
   useEffect(() => {
@@ -20,11 +21,15 @@ function RouteComponent() {
     }
   }, [contactId, contacts]);
 
-  if (!currentContact) {
+  if (!currentContact && isPending) {
     return <span>Loading...</span>
   }
 
+  if (!isPending && contacts.length && !currentContact) {
+    return <span>Not found</span>
+  }
+
   return (
-    <ContactDetails contact={currentContact} />
+    <ContactDetails contact={currentContact as Contact} />
   )
 }

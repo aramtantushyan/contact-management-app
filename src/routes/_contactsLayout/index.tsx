@@ -1,5 +1,6 @@
-import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router'
-import { useContext, useEffect } from "react"
+import { useContext } from "react";
+import { createFileRoute, Navigate } from '@tanstack/react-router';
+
 import { ContactsContext } from "../../contexts/contacts/ContactsContext"
 
 export const Route = createFileRoute('/_contactsLayout/')({
@@ -7,26 +8,16 @@ export const Route = createFileRoute('/_contactsLayout/')({
 })
 
 function RouteComponent() {
-  const { contacts } = useContext(ContactsContext);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (contacts.length) {
-      navigate({
-        to: '/contacts/$contactId',
-        params: {
-          contactId: `${contacts[0].id}`
-        }
-      })
-    }
-  }, [contacts])
-
+  const { contacts, isPending, hasRemoteData } = useContext(ContactsContext);
+  console.log('contacts length', contacts.length)
   return (
     <>
-      {!contacts.length ? (
+      {isPending || hasRemoteData && !contacts.length ? (
         <span>Loading...</span>
+      ) : !contacts.length  ? (
+        <span>You don't have contacts yet</span>
       ) : (
-        null
+        <Navigate to={`/contacts/$contactId`} params={{ contactId: `${contacts[0].id}` }}/>
       )}
     </>
   )

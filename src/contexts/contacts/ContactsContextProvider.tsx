@@ -36,7 +36,8 @@ export const ContactsContextProvider: React.FC<PropsWithChildren> = ({ children 
       contacts,
       setContacts,
       isPending,
-      isError
+      isError,
+      hasRemoteData: !!contactsData?.length
     }}>
       {children}
     </ContactsContext.Provider>

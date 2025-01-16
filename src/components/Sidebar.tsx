@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "@tanstack/react-router";
 import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import { ContactsContext } from "../contexts/contacts/ContactsContext";
 
@@ -39,7 +39,7 @@ const Sidebar = () => {
         <span>Loading contacts...</span>
       ) : (
         filteredContacts.length ? filteredContacts.map(c => (
-          <Link key={c.id} to={'/contacts/$contactId'} params={{
+          <Link key={c.id} activeProps={{ style: { backgroundColor: 'red' } }} to={'/contacts/$contactId'} params={{
             contactId: `${c.id}`
           }}>{c.name}</Link>
         ))
