@@ -30,21 +30,34 @@ const Sidebar = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '25%', backgroundColor: '#ECECEC', height: '100vh', padding: '12px 16px' }}>
-      <div style={{ display: 'flex', gap: 8, padding: '12px 0', borderBottom: '1px solid rgba(0, 0, 0, 0.5)' }}>
-        <input type="text" placeholder="Search" onChange={(e) => contactsSearchHandler(e.target.value.trim())}/>
-        <button onClick={addContactHadnler}>Add</button>
+    <div className="flex flex-col gap-3 w-1/4 max-w-72 h-screen" style={{ backgroundColor: '#ECECEC' }}>
+      <div className="flex gap-2 py-3 border-b border-solid border-slate-300 px-3">
+        <input
+          className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+          type="text"
+          placeholder="Search"
+          onChange={(e) => contactsSearchHandler(e.target.value.trim())}
+        />
+        <button className="rounded-md bg-indigo-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" onClick={addContactHadnler}>Add</button>
       </div>
       {isPending ? (
-        <span>Loading contacts...</span>
+        <span className="py-4 text-center text-slate-400">Loading contacts...</span>
       ) : (
         filteredContacts.length ? filteredContacts.map(c => (
-          <Link key={c.id} activeProps={{ style: { backgroundColor: 'red' } }} to={'/contacts/$contactId'} params={{
-            contactId: `${c.id}`
-          }}>{c.name}</Link>
+          <Link
+            key={c.id}
+            className="mx-3 px-3 py-1 rounded-md hover:bg-indigo-500 hover:text-white"
+            activeProps={{ className: 'bg-indigo-500 text-white' }}
+            to={'/contacts/$contactId'}
+            params={{
+              contactId: `${c.id}`
+            }}
+          >
+            {c.name}
+          </Link>
         ))
          : (
-          <span>No contacts yet</span>
+          <span className="py-4 text-center text-slate-400">There are no contacts</span>
         )
       )}
     </div>

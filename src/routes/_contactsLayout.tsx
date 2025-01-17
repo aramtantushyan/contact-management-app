@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_contactsLayout')({
 function RouteComponent() {
   return (
     <ContactsContextProvider>
-      <div style={{ display: 'flex', gap: 24 }}>
+      <div className="flex gap-4">
         <Sidebar />
         <Outlet />
       </div>

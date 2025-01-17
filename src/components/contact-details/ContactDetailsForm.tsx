@@ -127,7 +127,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                 <form.Field
                   name="name"
                   children={(field) => (
-                    <div className="sm:col-span-3">
+                    <div className="col-span-full">
                       <label htmlFor="fullname" className="block text-sm/6 font-medium text-gray-900">
                         Full name <span style={{ color: 'red' }}>*</span>
                       </label>
@@ -168,10 +168,10 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                             value={field.state.value}
                             onChange={(e) => field.handleChange(e.target.value)}
                           />
-                          {field.state.meta.errors ? (
-                            <em role="alert">{field.state.meta.errors.join(', ')}</em>
-                          ) : null}
                         </div>
+                        {field.state.meta.errors ? (
+                          <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                        ) : null}
                       </div>
                     </div>
                   )}
@@ -195,10 +195,10 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
-                        {field.state.meta.errors ? (
-                          <em role="alert">{field.state.meta.errors.join(', ')}</em>
-                        ) : null}
                       </div>
+                      {field.state.meta.errors ? (
+                        <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                      ) : null}
                     </div>
                   )}
                 />
@@ -221,10 +221,10 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
-                      {field.state.meta.errors ? (
-                        <em role="alert">{field.state.meta.errors.join(', ')}</em>
-                      ) : null}
                     </div>
+                    {field.state.meta.errors ? (
+                      <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                    ) : null}
                   </div>
                 )}
               />
@@ -247,10 +247,10 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
-                      {field.state.meta.errors ? (
-                        <em role="alert">{field.state.meta.errors.join(', ')}</em>
-                      ) : null}
                     </div>
+                    {field.state.meta.errors ? (
+                      <em role="alert">{field.state.meta.errors.join(', ')}</em>
+                    ) : null}
                   </div>
                 )}
               />
@@ -273,9 +273,6 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
-                      {field.state.meta.errors ? (
-                        <em role="alert">{field.state.meta.errors.join(', ')}</em>
-                      ) : null}
                     </div>
                   </div>
                 )}
@@ -299,9 +296,6 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                           value={field.state.value}
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
-                        {field.state.meta.errors ? (
-                          <em role="alert">{field.state.meta.errors.join(', ')}</em>
-                        ) : null}
                       </div>
                     </div>
                   )}
