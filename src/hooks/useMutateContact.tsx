@@ -50,11 +50,9 @@ const useMutateContact = (onSuccess?: (contact: Contact) => void, onError?: (err
       return response.json();
     },
     onSuccess: (data) => {
-      console.log('Mutation successful', data);
       onSuccess?.(data);
     },
     onError: (error) => {
-      console.error('Error occurred during mutation', error);
       onError?.(error);
     },
   });
