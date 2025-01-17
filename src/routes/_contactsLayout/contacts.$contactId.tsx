@@ -22,11 +22,19 @@ function RouteComponent() {
   }, [contactId, contacts]);
 
   if (!currentContact && isPending) {
-    return <span>Loading...</span>
+    return (
+      <div className="flex w-full justify-center items-start p-6">
+        <span className="py-4 text-center text-slate-400">Loading...</span>
+      </div>
+    )
   }
 
   if (!isPending && contacts.length && !currentContact) {
-    return <span>Not found</span>
+    return (
+      <div className="flex w-full justify-center items-start p-6">
+        <span className="py-4 text-center text-slate-400">Contact is not found</span>
+      </div>
+    )
   }
 
   return (

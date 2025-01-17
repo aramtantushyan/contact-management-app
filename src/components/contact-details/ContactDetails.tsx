@@ -6,6 +6,8 @@ import DeleteContactDialog from "./DeleteContactDialog";
 import useMutateContact, { HttpMethod } from "../../hooks/useMutateContact";
 import { ContactsContext } from "../../contexts/contacts/ContactsContext";
 import { BuildingOffice2Icon, EnvelopeIcon, MapPinIcon } from "@heroicons/react/24/solid";
+import ContactImage from "./ContactImage";
+import Loader from "../Loader";
 
 interface ContactDetailProps {
   contact: Contact;
@@ -15,7 +17,7 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
   const { contacts, setContacts } = useContext(ContactsContext);
   const navigate = useNavigate();
   const mutation = useMutateContact(onDeleteSuccess);
-
+  console.log('mutation', mutation.isPending)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   
   if (!contact) {
@@ -34,6 +36,7 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
   }
 
   const deleteContactHandler = () => {
+    setOpenDeleteDialog(false);
     mutation.mutate({
       method: HttpMethod.DELETE,
       contactData: {
@@ -45,9 +48,7 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
   function onDeleteSuccess() {
     const newContacts = contacts.filter(c => c.id !== contact.id);
     setContacts(newContacts);
-    setOpenDeleteDialog(false);
     const hasContacts = !!newContacts.length;
-    console.log('hasContacts', hasContacts, newContacts)
     navigate({
       to: hasContacts ? '/contacts/$contactId' : '/',
       ...(hasContacts ? {
@@ -62,11 +63,7 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
     <>
       <div className="flex flex-col flex-1 py-3 px-3 gap-6 lg:flex-row">
         <section className="flex justify-center lg:w-80">
-          <img
-            src={contact.image_url}
-            alt="avatar"
-            className="rounded-2xl w-56 h-56 object-cover"
-          />
+          <ContactImage imageUrl={contact.image_url} onlyPreview={true} />
         </section>
         <section className="flex flex-col flex-1 gap-4 lg:pr-16">
           <div className="pb-4 border-b border-solid border-slate-300">
@@ -102,6 +99,9 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
         </section>
       </div>
       <DeleteContactDialog open={openDeleteDialog} setOpen={setOpenDeleteDialog} onDelete={deleteContactHandler} />
+      {mutation.isPending && (
+        <Loader />
+      )}
     </>
   )
 }

@@ -3,7 +3,11 @@ import { Link, useNavigate } from "@tanstack/react-router";
 
 import { ContactsContext } from "../contexts/contacts/ContactsContext";
 
-const Sidebar = () => {
+interface SidebarProps {
+  show: boolean
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ show }) => {
   const { contacts, isPending } = useContext(ContactsContext);
   const [filteredContacts, setFilteredContacts] = useState(contacts);
   const navigate = useNavigate();
@@ -30,7 +34,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3 w-1/4 w-72 min-h-full" style={{ backgroundColor: '#ECECEC' }}>
+    <div className={`flex-col gap-3 w-1/4 w-72 min-h-full ${!show ? 'hidden' : 'flex'} transition-all duration-500 bg-gray-100 md:flex`}>
       <div className="flex gap-2 py-3 border-b border-solid border-slate-300 px-3">
         <input
           className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
