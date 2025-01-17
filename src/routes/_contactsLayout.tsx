@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_contactsLayout')({
 function RouteComponent() {
   return (
     <ContactsContextProvider>
-      <div className="flex">
+      <div className="flex h-full min-h-screen">
         <Sidebar />
         <Outlet />
       </div>
