@@ -7,7 +7,6 @@ import useMutateContact, { HttpMethod } from "../../hooks/useMutateContact";
 import { ContactsContext } from "../../contexts/contacts/ContactsContext";
 import { contactSchema } from "../../utils/validation/validation-schemas";
 import ContactImage from "./ContactImage";
-import Loader from "../Loader";
 
 interface ContactDetailsFormProps {
   contact?: Contact;
@@ -34,7 +33,10 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
         ...contacts,
         {
           ...contactData,
-          image_url: `https://placehold.co/600x400/blue/white?text=User${contactData.id}, ${contactData.name}`
+          ...(contactData.image_url 
+            ? { image_url: `https://placehold.co/600x400/blue/white?text=User${contactData.id}, ${contactData.name}` }
+            : {}
+          ),
         }
       ];
     }
@@ -44,7 +46,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
       params: {
         contactId: `${contact?.id || contactData.id}`
       }
-    })
+    });
   }
 
   const cancelHandler = () => {
@@ -76,14 +78,15 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
       image_url: contact?.image_url || '',
     },
     validators: {
-      onBlur: contactSchema
+      onChange: contactSchema
     },
     onSubmit: async ({ value }) => {
-      return mutation.mutate({ 
+      mutation.mutate({ 
         method: contact ? HttpMethod.PUT : HttpMethod.POST,
         contactData: {
           ...value,
-          ...(contact ? { id: contact.id } : {})
+          ...(contact ? { id: contact.id } : {}),
+          isLocalContact: contact?.isLocalContact ?? true
         }
       });
     },
@@ -155,18 +158,16 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
                     Username <span className="text-red-500">*</span>
                   </label>
                   <div className="mt-1">
-                    <div className="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
-                      <input
-                        disabled={field.form.state.isSubmitting || mutation.isPending}
-                        id="username"
-                        name="username"
-                        type="text"
-                        className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6 disabled:opacity-50"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                      />
-                    </div>
+                    <input
+                      disabled={field.form.state.isSubmitting || mutation.isPending}
+                      id="username"
+                      name="username"
+                      type="text"
+                      className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 disabled:opacity-50"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                    />
                     {field.state.meta.errors && field.state.meta.isTouched  ? (
                       <em className="absolute text-xs text-red-500" role="alert">
                         {field.state.meta.errors.join(', ')}

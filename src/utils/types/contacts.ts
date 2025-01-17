@@ -36,5 +36,6 @@ export interface Contact {
   company: {
     name?: string,
   },
-  image_url: string
+  image_url: string,
+  isLocalContact?: boolean
 }

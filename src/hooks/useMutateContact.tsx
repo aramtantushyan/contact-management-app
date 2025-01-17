@@ -15,6 +15,10 @@ const useMutateContact = (onSuccess?: (contact: Contact) => void, onError?: (err
       let response;
       const contactId = contactData.id;
 
+      if (contactData.isLocalContact && method === HttpMethod.PUT) {
+        return contactData;
+      }
+
       switch (method) {
         case HttpMethod.POST:
           response = await fetch(contactsApi, {

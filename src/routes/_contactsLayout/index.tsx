@@ -12,9 +12,9 @@ function RouteComponent() {
 
   return (
     <div className="flex w-full justify-center items-start p-6">
-      {isPending || hasRemoteData && !contacts.length ? (
+      {isPending && !contacts.length ? (
         <span className="py-4 text-center text-slate-400">Loading...</span>
-      ) : hasRemoteData && !contacts.length ? (
+      ) : !isPending && hasRemoteData && !contacts.length ? (
         <div className="flex flex-col w-3/4 justify-center items-center border border-dashed border-slate-600 rounded-md px-12 py-16 gap-2">
           <span className="text-center text-slate-500 text-sm">
             You don't have contacts yet

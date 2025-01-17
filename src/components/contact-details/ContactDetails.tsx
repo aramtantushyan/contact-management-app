@@ -17,7 +17,7 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
   const { contacts, setContacts } = useContext(ContactsContext);
   const navigate = useNavigate();
   const mutation = useMutateContact(onDeleteSuccess);
-  console.log('mutation', mutation.isPending)
+
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   
   if (!contact) {
@@ -49,14 +49,17 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
     const newContacts = contacts.filter(c => c.id !== contact.id);
     setContacts(newContacts);
     const hasContacts = !!newContacts.length;
-    navigate({
-      to: hasContacts ? '/contacts/$contactId' : '/',
-      ...(hasContacts ? {
-        params: {
-          contactId: `${newContacts[0].id}`
-        }
-      } : {})
-    })
+    setTimeout(() => {
+      navigate({
+        to: hasContacts ? '/contacts/$contactId' : '/',
+        ...(hasContacts ? {
+          params: {
+            contactId: `${newContacts[0].id}`
+          }
+        } : {})
+      })
+
+    }, 500)
   }
 
   return (
@@ -85,12 +88,14 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
                 {contact.address.street}, {`${contact.address.zipcode ? `${contact.address.zipcode}, ` : ''}`}{contact.address.city}
               </span>
             </span>
-            <span className="flex gap-2 items-center">
-              <span>
-                <BuildingOffice2Icon className="size-5 text-gray-600"/>
+            {contact.company.name ? (
+              <span className="flex gap-2 items-center">
+                <span>
+                  <BuildingOffice2Icon className="size-5 text-gray-600"/>
+                </span>
+                <span className="text-gray-600">{contact.company.name}</span>
               </span>
-              <span className="text-gray-600">{contact.company.name}</span>
-            </span>
+            ) : null}
           </div>
           <div className="flex gap-2 pt-4 border-t border-solid border-slate-300">
             <button className="w-auto justify-center rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-gray-200 hover:bg-gray-50 sm:mt-0" onClick={editContactHandler}>Edit</button>
