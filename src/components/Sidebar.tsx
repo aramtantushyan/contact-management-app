@@ -10,10 +10,11 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ show }) => {
   const { contacts, isPending } = useContext(ContactsContext);
   const [filteredContacts, setFilteredContacts] = useState(contacts);
+  const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
-
+  
   useEffect(() => {
-    if (contacts) {
+    if (contacts && !keyword) {
       setFilteredContacts(contacts);
     }
   }, [contacts])
@@ -25,6 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ show }) => {
   };
 
   const contactsSearchHandler = (keyword: string) => {
+    setKeyword(keyword);
     if (!keyword) {
       setFilteredContacts(contacts);
     } else {
