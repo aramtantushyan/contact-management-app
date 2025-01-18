@@ -13,40 +13,26 @@ interface ContactDetailsFormProps {
 }
 
 const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
-  const { contacts, setContacts } = useContext(ContactsContext);
+  const { contacts, updateContact, addContact } = useContext(ContactsContext);
   const  mutation = useMutateContact(onFormSubmissionSuccess);
   const navigate = useNavigate();
 
   function onFormSubmissionSuccess(contactData: Contact) {
-    let newContacts;
-
     if (contact) {
-      newContacts = contacts.map(c => {
-        if (c.id === contact.id) {
-          return contactData;
-        } else {
-          return c;
-        }
-      });
+      updateContact(contactData);
     } else {
-      newContacts = [
-        ...contacts,
-        {
-          ...contactData,
-          ...(contactData.image_url 
-            ? { image_url: `https://placehold.co/600x400/blue/white?text=User${contactData.id}, ${contactData.name}` }
-            : {}
-          ),
-        }
-      ];
+      const isExistingId = contacts.find(c => c.id === contactData.id);
+      const id = !isExistingId ? contactData.id : contacts.sort((a, b) => a.id - b.id).at(-1).id + 1;
+      const newContact = {
+        ...contactData,
+        id,
+        ...(contactData.image_url 
+          ? { image_url: `https://placehold.co/600x400/blue/white?text=User${contactData.id}, ${contactData.name}` }
+          : {}
+        ),
+      };
+      addContact(newContact);
     }
-    setContacts(newContacts);
-    navigate({
-      to: '/contacts/$contactId',
-      params: {
-        contactId: `${contact?.id || contactData.id}`
-      }
-    });
   }
 
   const cancelHandler = () => {
@@ -84,7 +70,17 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
       mutation.mutate({ 
         method: contact ? HttpMethod.PUT : HttpMethod.POST,
         contactData: {
-          ...value,
+          name: value.name.trim(),
+          username: value.username.trim(),
+          email: value.email.trim(),
+          address: {
+            street: value.address.street.trim(),
+            city: value.address.city.trim(),
+            zipcode: value.address.zipcode ? value.address.zipcode.trim() : ''
+          },
+          company: {
+            name: value.company.name ? value.company.name.trim() : ''
+          },
           ...(contact ? { id: contact.id } : {}),
           isLocalContact: contact?.isLocalContact ?? true
         }
@@ -152,6 +148,10 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
             />
             <form.Field
               name="username"
+              validators={{
+                onChange: ({value}) =>
+                  contacts.some(c => c.username === value && c.id !== contact?.id) ? 'Contact with this username already exists' : null,
+              }}
               children={(field) => (
                 <div className="sm:col-span-4">
                   <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">

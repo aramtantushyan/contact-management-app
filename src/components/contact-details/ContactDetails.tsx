@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 
 import { Contact } from "../../utils/types/contacts";
@@ -14,15 +14,17 @@ interface ContactDetailProps {
 }
 
 const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
-  const { contacts, setContacts } = useContext(ContactsContext);
+  const { deleteContact } = useContext(ContactsContext);
   const navigate = useNavigate();
   const mutation = useMutateContact(onDeleteSuccess);
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  
-  if (!contact) {
-    return <span>No contact</span>
-  }
+
+  useEffect(() => {
+    if (!contact) {
+      navigate({ to: '/' });
+    }
+  }, [contact])
 
   const toggleDeleteDialogVisibility = () => {
     setOpenDeleteDialog(!openDeleteDialog);
@@ -46,20 +48,11 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
   }
 
   function onDeleteSuccess() {
-    const newContacts = contacts.filter(c => c.id !== contact.id);
-    setContacts(newContacts);
-    const hasContacts = !!newContacts.length;
-    setTimeout(() => {
-      navigate({
-        to: hasContacts ? '/contacts/$contactId' : '/',
-        ...(hasContacts ? {
-          params: {
-            contactId: `${newContacts[0].id}`
-          }
-        } : {})
-      })
+    deleteContact(contact.id);
+  }
 
-    }, 500)
+  if (!contact) {
+    return null;
   }
 
   return (
@@ -103,7 +96,11 @@ const ContactDetails: React.FC<ContactDetailProps> = ({ contact }) => {
           </div>
         </section>
       </div>
-      <DeleteContactDialog open={openDeleteDialog} setOpen={setOpenDeleteDialog} onDelete={deleteContactHandler} />
+      <DeleteContactDialog
+        open={openDeleteDialog}
+        setOpen={setOpenDeleteDialog}
+        onDelete={deleteContactHandler}
+      />
       {mutation.isPending && (
         <Loader />
       )}

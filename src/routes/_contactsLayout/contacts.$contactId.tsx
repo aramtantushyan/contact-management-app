@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useMemo } from "react";
 import { createFileRoute } from '@tanstack/react-router';
 
 import { ContactsContext } from "../../contexts/contacts/ContactsContext";
@@ -12,13 +12,10 @@ export const Route = createFileRoute('/_contactsLayout/contacts/$contactId')({
 function RouteComponent() {
   const { contactId } = Route.useParams();
   const { contacts, isPending } = useContext(ContactsContext);
-  const [currentContact, setCurrentContact] = useState<Contact>();
 
-  useEffect(() => {
-    if (contactId) {
-      const currentContact = contacts.find(c => c.id === +contactId);
-      setCurrentContact(currentContact);
-    }
+  const currentContact = useMemo(() => {
+    const currentContact = contacts?.find(c => c.id === +contactId);
+    return currentContact;
   }, [contactId, contacts]);
 
   if (!currentContact && isPending) {
@@ -29,7 +26,7 @@ function RouteComponent() {
     )
   }
 
-  if (!isPending && contacts.length && !currentContact) {
+  if (!isPending && contacts?.length && !currentContact) {
     return (
       <div className="flex w-full justify-center items-start p-6">
         <span className="py-4 text-center text-slate-400">Contact is not found</span>

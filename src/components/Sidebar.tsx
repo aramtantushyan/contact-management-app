@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 
 import { ContactsContext } from "../contexts/contacts/ContactsContext";
+import { Contact } from "../utils/types/contacts";
 
 interface SidebarProps {
   show: boolean
@@ -9,12 +10,13 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ show }) => {
   const { contacts, isPending } = useContext(ContactsContext);
-  const [filteredContacts, setFilteredContacts] = useState(contacts);
+  const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
-  
+
   useEffect(() => {
-    if (contacts && !keyword) {
+    if (contacts) {
+      setKeyword('');
       setFilteredContacts(contacts);
     }
   }, [contacts])
@@ -25,12 +27,13 @@ const Sidebar: React.FC<SidebarProps> = ({ show }) => {
     })
   };
 
-  const contactsSearchHandler = (keyword: string) => {
-    setKeyword(keyword);
-    if (!keyword) {
+  const contactsSearchHandler = (enteredValue: string) => {
+    setKeyword(enteredValue);
+    const trimmedKeyword = enteredValue.trim();
+    if (!trimmedKeyword && keyword.trim()) {
       setFilteredContacts(contacts);
     } else {
-      const filteredContacts = contacts.filter(c => c.name.toLowerCase().includes(keyword.toLowerCase()));
+      const filteredContacts = contacts.filter(c => c.name.toLowerCase().includes(trimmedKeyword.toLowerCase()));
       setFilteredContacts(filteredContacts);
     }
   };
@@ -41,12 +44,13 @@ const Sidebar: React.FC<SidebarProps> = ({ show }) => {
         <input
           className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
           type="text"
+          value={keyword}
           placeholder="Search"
-          onChange={(e) => contactsSearchHandler(e.target.value.trim())}
+          onChange={(e) => contactsSearchHandler(e.target.value)}
         />
         <button className="rounded-md bg-indigo-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" onClick={addContactHadnler}>Add</button>
       </div>
-      {isPending ? (
+      {isPending || !contacts ? (
         <span className="py-4 text-center text-slate-400">Loading contacts...</span>
       ) : (
         filteredContacts.length ? filteredContacts.map(c => (
