@@ -81,6 +81,7 @@ const ContactDetailsForm: React.FC<ContactDetailsFormProps> = ({ contact }) => {
           company: {
             name: value.company.name ? value.company.name.trim() : ''
           },
+          image_url: value?.image_url,
           ...(contact ? { id: contact.id } : {}),
           isLocalContact: contact?.isLocalContact ?? true
         }
